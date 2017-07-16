@@ -19,6 +19,7 @@ Version 1.5 is a bugfix release by VR51.
 1. Download the "Import External Images" zip file.
 2. Upload to your WordPress plugins directory.
 3. Activate the plugin via the WordPress Plugins tab.
+4. Navigate to Media > Import Images
 
 == Frequently Asked Questions ==
 
