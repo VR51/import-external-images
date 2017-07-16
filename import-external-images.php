@@ -337,7 +337,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	function external_image_backcatalog () {
 
-		$posts = get_posts( array( 'numberposts'=>-1 ) );
+		$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 		echo '<h4>Processing Posts...</h4>';
 		
 		set_time_limit(300);
@@ -379,7 +379,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	function external_image_get_backcatalog () {
 
-		$posts = get_posts( array( 'numberposts' => -1 ) );
+		$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 				
 		$count_posts = 0;
 		$posts_to_import = array();
@@ -462,7 +462,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 		<?php
 		
-			$posts = get_posts( array( 'numberposts'=>-1 ) );
+			$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 			$count = 0;
 			foreach( $posts as $this_post ) {
 				$images = external_image_get_img_tags ($this_post->ID);
