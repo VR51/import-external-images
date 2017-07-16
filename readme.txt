@@ -2,6 +2,7 @@
 Contributors: martythornley, VR51
 Donate link: http://martythornley.com
 Donate Link: https://paypal.me/vr51
+Plugin URL: https://github.com/VR51/import-external-images
 Tags: images, gallery, photobloggers, attachments, photo, links, external, photographers, Flickr, save, download, fetch, external, import
 Requires at least: 3.2
 Tested up to: 4.8
