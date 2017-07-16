@@ -50,6 +50,7 @@ Fixed bug that caused the plugin to download images hosted on HTTP sites. Now fe
 Changed post query to explicitly loop through all post types with any post status.
 Added option to import externally linked PDFs.
 Fixed undefined variable error.
+Fixed undefined key error.
 
 = 1.3 =
 
@@ -59,3 +60,4 @@ Fixed duplicate EXTERNAL_IMAGES_DIR notice
 = 1.1 =
 
 Fixed title in readme.
+
