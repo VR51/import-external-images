@@ -463,10 +463,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		<p><label for="external_image_images_count_custom">Images per Post</label>
 			<input type="number" name="external_image_images_count_custom" min="1" max="20" value="<?php echo EXTERNAL_IMAGES_MAX_COUNT; ?>">
 		</p>
-
+		<p class="howto">Default is 20. Maximum is 20.</p>
+		
 		<p><label for="external_image_posts_count_custom">Posts per Run</label>
 			<input type="number" name="external_image_posts_count_custom" min="1" max="50" value="<?php echo EXTERNAL_IMAGES_MAX_POSTS_COUNT; ?>">
 		</p>
+		<p class="howto">Default is 50. Maximum is 50.</p>
+		
 		<h3>Which external IMG links to process</h3>
 		<p>By default, all images hosted on any external site are processed. Use these options to ignore images from certain domains.</p>
 		<p>
