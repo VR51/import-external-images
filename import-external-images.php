@@ -1,11 +1,11 @@
 <?php	
 /*
 Plugin Name: Import External Images VR51
-Plugin URI:  http://martythornley.com
+Plugin URI:  https://github.com/VR51/import-external-images
 Version: 1.5
 Description: Examines the text of a post and makes local copies of all the images linked though IMG tags, adding them as gallery attachments on the post itself.
-Author: Marty Thornley
-Author URI: http://martythornley.com
+Author: Marty Thornley, VR51
+Author URI: https://github.com/VR51/import-external-images
 License: GPLv2 or later
 */
 
