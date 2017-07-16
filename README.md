@@ -42,6 +42,7 @@ You can make it ignore any domain you want on the settings page, in case you wor
 Fixed bug that caused the plugin to download images hosted on HTTP sites. Now fetches imedia from HTTPS sites too.
 Changed post query to explicitly loop through all post types with any post status.
 Added option to import externally linked PDFs.
+Fixed undefined variable error.
 
 = 1.3 =
 
