@@ -1,4 +1,4 @@
-<?php	
+<?php
 /*
 Plugin Name: Import External Images VR51
 Plugin URI:  https://github.com/VR51/import-external-images
@@ -31,8 +31,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 	$external_image_count = 0;
 	
-	define( 'EXTERNAL_IMAGES_MAX_POSTS_COUNT' , 50 );
-	define( 'EXTERNAL_IMAGES_MAX_COUNT' , 20 );
+	$images_count_custom = get_option('external_image_images_count_custom');
+	if ( !empty($images_count_custom) ) {
+		if ( $images_count_custom >= 1 || $images_count_custom <= 20 ) {
+			define( 'EXTERNAL_IMAGES_MAX_COUNT' , $images_count_custom );
+		} else {
+			define( 'EXTERNAL_IMAGES_MAX_COUNT' , 20 );
+		}
+	} else {
+		define( 'EXTERNAL_IMAGES_MAX_COUNT' , 20 );
+	}
+
+	$posts_count_custom = get_option('external_image_posts_count_custom');
+	if ( !empty($posts_count_custom) ) {
+		if ( $posts_count_custom >= 1 || $posts_count_custom <= 50 ) {
+			define( 'EXTERNAL_IMAGES_MAX_POSTS_COUNT' , $posts_count_custom );
+		} else {
+			define( 'EXTERNAL_IMAGES_MAX_POSTS_COUNT' , 50 );
+		}
+	} else {
+		define( 'EXTERNAL_IMAGES_MAX_POSTS_COUNT' , 50 );
+	}
+
 	define( 'EXTERNAL_IMAGES_DIR' , plugin_dir_path( __FILE__ ) );
 	define( 'EXTERNAL_IMAGES_URL' , plugins_url( basename( dirname( __FILE__ ) ) ) );
 		
@@ -45,19 +65,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			
 	//register_activation_hook( __FILE__ , 'external_image_install' );
 
-	add_action( 'admin_menu', 		'external_image_menu' );
-	add_action( 'admin_init', 		'external_image_admin_init' );
-	add_action( 'admin_head' , 		'external_images_bulk_resize_admin_javascript' );
-	add_action( 'admin_notices',	'external_images_bulk_resize_message' , 90 );
+	add_action( 'admin_menu', 'external_image_menu' );
+	add_action( 'admin_init', 'external_image_admin_init' );
+	add_action( 'admin_head' , 'external_images_bulk_resize_admin_javascript' );
+	add_action( 'admin_notices', 'external_images_bulk_resize_message' , 90 );
 	
 	function external_image_admin_init () {		
 		global $pagenow;
 		
-		register_setting( 'external_image' , 'external_image_whichimgs' );
+		register_setting( 'external_image' , 'external_image_whichimgs', 'external_image_images_count_custom', 'external_image_posts_count_custom' );
 		
 		if ( $pagenow == 'post.php' ) {
-			add_action( 'post_submitbox_misc_actions' ,		'import_external_images_per_post' );
-			add_action( 'save_post', 						'external_image_import_images' );	
+			add_action( 'post_submitbox_misc_actions', 'import_external_images_per_post' );
+			add_action( 'save_post', 'external_image_import_images' );	
 		}
 
 		add_filter( 'attachment_link' , 'force_attachment_links_to_link_to_image' , 9 , 3 );		
@@ -70,7 +90,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		if ( EXTERNAL_IMAGES_ALLOW_BULK_MESSAGE ) {		
 			$message = '<h4>Please Resize Your Images</h4>';
 			$message .= '<p>You may want to resize large images on you previous site before importing images. It will help save bandwidth during the import and prevent the import from crashing.';
-			$message .= '<p>You can <a href="http://photographyblogsites.com/file-folder/import-tools/bulk-resize-media.zip">download the "Bulk Image Resizer" here.</a></p>';
+			$message .= '<p>You can <a href="https://en-gb.wordpress.org/plugins/regenerate-thumbnails/">download the "Regernate Thumbnails" plugin here.</a></p>';
 				
 			if ( $pagenow == 'upload.php' && isset( $_GET['page'] ) && $_GET['page'] == 'external_image' ) {
 				echo '<div class="updated fade">';
@@ -120,8 +140,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		
 		if ( is_array( $external_images ) && count( $external_images ) > 0 ) {
 		
-		$html = 	'<div class="misc-pub-section " id="external-images" style="background-color: #FFFFE0; border-color: #E6DB55;">';
-		$html .= 	'<h4>You have ('.count( $external_images ).')  files that can be imported!</h4>';
+		$html = '<div class="misc-pub-section " id="external-images" style="background-color: #FFFFE0; border-color: #E6DB55;">';
+		$html .= '<h4>You have ('.count( $external_images ).')  files that can be imported!</h4>';
 		
 		foreach ( $external_images as $external_image ) {
 			
@@ -346,7 +366,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 		
 		$count = 0;
 		
-		$before = '<form style="padding: 0 10px; margin: 20px 20px 0 0; float: left;" action="" method="post" name="external_image-backcatalog">';
+		$before = '<form style="padding: 10px; margin: 20px 20px 0 0; float: left;" action="" method="post" name="external_image-backcatalog">';
 		$resubmit = '<input type="hidden" value="backcatalog" name="action">
 			<input class="button-primary" type="submit" value="Process More Posts">';
 		$after = '</form>';
@@ -425,8 +445,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			echo '</div>';
 			
 		} elseif ( isset( $_POST['action'] ) && $_POST['action'] == 'update' ) {
-			update_option('external_image_whichimgs',   esc_html( $_POST['external_image_whichimgs'] ) );
-			update_option('external_image_excludes',   	esc_html( $_POST['external_image_excludes'] ) );
+			update_option('external_image_whichimgs', esc_html( $_POST['external_image_whichimgs'] ) );
+			update_option('external_image_excludes', esc_html( $_POST['external_image_excludes'] ) );
+			update_option('external_image_images_count_custom', esc_html( $_POST['external_image_images_count_custom'] ) );
+			update_option('external_image_posts_count_custom', esc_html( $_POST['external_image_posts_count_custom'] ) );
 
 			echo '<div id="message" class="updated fade" style="background-color:rgb(255,251,204);"><p>Settings updated.</p></div>';
 		} 
@@ -434,10 +456,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	
 	
 	<form name="external_image-options" method="post" action="" style="width:300px; padding: 0 20px; margin: 20px 20px 0 0 ; float: left; background: #f6f6f6; border: 1px solid #e5e5e5; ">
-	<h2 style="margin-top: 0px;">Options</h2>
+	<h2 style="margin-top: 10px;">Options</h2>
 		<?php settings_fields('external_image'); ?>
-		<h3>Which external IMG links to process:</h3>
-		<p>By default, all external images are processed.  This can be set to ignore images from certain domains.</p>
+		<h3>How many images and posts to process</h3>
+		<p>The import process might stop if there are too many images and posts to process. Select lower values to process per run to improve the import process.</p>
+		<p><label for="external_image_images_count_custom">Images per Post</label>
+			<input type="number" name="external_image_images_count_custom" min="1" max="20" value="<?php echo EXTERNAL_IMAGES_MAX_COUNT; ?>">
+		</p>
+
+		<p><label for="external_image_posts_count_custom">Posts per Run</label>
+			<input type="number" name="external_image_posts_count_custom" min="1" max="50" value="<?php echo EXTERNAL_IMAGES_MAX_POSTS_COUNT; ?>">
+		</p>
+		<h3>Which external IMG links to process</h3>
+		<p>By default, all images hosted on any external site are processed. Use these options to ignore images from certain domains.</p>
 		<p>
 		<label for="myradio1">
 			<input id="myradio1" type="radio" name="external_image_whichimgs" value="all" <?php echo (get_option('external_image_whichimgs')!='exclude'?'checked="checked"':''); ?> /> All images
@@ -491,7 +522,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			if ( !empty($posts_to_fix) ) {
 				if ( is_array( $posts_to_fix ) ) {
 					$html .= '<p class="howto">Please note that this can take a long time for sites with a lot of posts. You can also edit each post and import images one post at a time.</p>';
-					$html .= '<p class="howto">We will process up to 50 posts at a time. You should <a class="button-secondary" href="'.admin_url('upload.php?page=external_image').'">refresh the page</a> when done to check if you have more than 50 posts.</p>';
+					$html .= '<p class="howto">We will process up to a maximum of 50 posts at a time. You should <a class="button-secondary" href="'.admin_url('upload.php?page=external_image').'">refresh the page</a> when done to check if you have more than 50 posts.</p>';
 					$html .= '<p class="howto">Only '.EXTERNAL_IMAGES_MAX_COUNT.' images per post will be imported at a time to keep things from taking too long. For posts with more than that, they will get added back into the list when you refresh or come back and try again.</p>';
 				
 					$html .= $import;
