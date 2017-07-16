@@ -1,6 +1,6 @@
 <?php	
 /*
-Plugin Name: Import External Images BG
+Plugin Name: Import External Images VR51
 Plugin URI:  http://martythornley.com
 Version: 1.5
 Description: Examines the text of a post and makes local copies of all the images linked though IMG tags, adding them as gallery attachments on the post itself.
@@ -29,7 +29,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-	$external_image_count = 0;	
+	$external_image_count = 0;
 	
 	define( 'EXTERNAL_IMAGES_MAX_POSTS_COUNT' , 50 );
 	define( 'EXTERNAL_IMAGES_MAX_COUNT' , 20 );
@@ -486,24 +486,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			
 			$html = '';
 			
-			if ( is_array( $posts_to_fix ) ) {
-				$html .= '<p class="howto">Please note that this can take a long time for sites with a lot of posts. You can also edit each post and import images one post at a time.</p>';
-				$html .= '<p class="howto">We will process up to 50 posts at a time. You should <a class="button-secondary" href="'.admin_url('upload.php?page=external_image').'">refresh the page</a> when done to check if you have more than 50 posts.</p>';
-				$html .= '<p class="howto">Only '.EXTERNAL_IMAGES_MAX_COUNT.' images per post will be imported at a time to keep things from taking too long. For posts with more than that, they will get added back into the list when you refresh or come back and try again.</p>';
+			if ( !empty($posts_to_fix) ) {
+				if ( is_array( $posts_to_fix ) ) {
+					$html .= '<p class="howto">Please note that this can take a long time for sites with a lot of posts. You can also edit each post and import images one post at a time.</p>';
+					$html .= '<p class="howto">We will process up to 50 posts at a time. You should <a class="button-secondary" href="'.admin_url('upload.php?page=external_image').'">refresh the page</a> when done to check if you have more than 50 posts.</p>';
+					$html .= '<p class="howto">Only '.EXTERNAL_IMAGES_MAX_COUNT.' images per post will be imported at a time to keep things from taking too long. For posts with more than that, they will get added back into the list when you refresh or come back and try again.</p>';
 				
-				$html .= $import;
-				$html .= '<div id="posts_list" style="padding: 0 5px; margin: 0px; clear:both; ">';
-				$html .= '<h4>Here is a look at posts that contain external Images:</h4>';
+					$html .= $import;
+					$html .= '<div id="posts_list" style="padding: 0 5px; margin: 0px; clear:both; ">';
+					$html .= '<h4>Here is a look at posts that contain external Images:</h4>';
 
-				$html .= '<ul style="padding: 0 0 0 5px;">';
-				foreach( $posts_to_fix as $post_to_fix ) {
-					$html .= '<li>"<strong>'.$post_to_fix['title'].'</strong>" - ' .count($post_to_fix['images']). ' images. <a href="'.admin_url('post.php?post='.$post_to_fix['id'].'&action=edit').'">Edit Post</a>.</li>';
+					$html .= '<ul style="padding: 0 0 0 5px;">';
+					foreach( $posts_to_fix as $post_to_fix ) {
+						$html .= '<li>"<strong>'.$post_to_fix['title'].'</strong>" - ' .count($post_to_fix['images']). ' images. <a href="'.admin_url('post.php?post='.$post_to_fix['id'].'&action=edit').'">Edit Post</a>.</li>';
 				}
-				$html .= '</ul>';
-				$html .= '</div>';
-				
-			
-
+					$html .= '</ul>';
+					$html .= '</div>';
+				}
 			} else {
 				$html .= "<p>We didn't find any external images to import. You're all set!</p>";
 				
