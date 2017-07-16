@@ -12,7 +12,7 @@ Imports images and (optionsally) PDFs from external sites where external images 
 
 This plugin is based on the work done in the "Add Linked Images to Gallery" plugin by http://www.bbqiguana.com/
 
-Version 1.5 is a bugfix release by VR51.
+Version 1.5 is a bugfix release by [VR51](https://github.com/VR51/import-external-images).
 
 == Installation ==
 
