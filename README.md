@@ -39,11 +39,16 @@ You can make it ignore any domain you want on the settings page, in case you wor
 
 = 1.5 =
 
+This is the first VR51 release of this plugin.
+
 Fixed bug that caused the plugin to download images hosted on HTTP sites. Now fetches imedia from HTTPS sites too.
 Changed post query to explicitly loop through all post types with any post status.
 Added option to import externally linked PDFs.
 Fixed undefined variable error.
 Fixed undefined key error.
+Changed link of Bulk Image Resizer plugin to Regenerate Thumbnails hosted on wordpress.org.
+Added option to adjust number of images to process per run.
+Added option to adjust number of posts to process per run.
 
 = 1.3 =
 
