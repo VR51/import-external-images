@@ -1,4 +1,4 @@
-=== Import External Images ===
+=== Import External Images VR51 ===
 
 Makes local copies of all externally linked images and (Optionally) PDFs in a post.
 
