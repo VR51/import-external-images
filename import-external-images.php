@@ -2,7 +2,7 @@
 /*
 Plugin Name: Import External Images BG
 Plugin URI:  http://martythornley.com
-Version: 1.4
+Version: 1.5
 Description: Examines the text of a post and makes local copies of all the images linked though IMG tags, adding them as gallery attachments on the post itself.
 Author: Marty Thornley
 Author URI: http://martythornley.com
@@ -219,6 +219,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	/*
 	 * Handle importing of external image
 	 * Most of this taken from WordPress function 'media_sideload_image'
+	 * https://developer.wordpress.org/reference/functions/media_sideload_image/
  	 * @param string $file The URL of the image to download
  	 * @param int $post_id The post ID the media is to be associated with
  	 * @param string $desc Optional. Description of the image
@@ -227,17 +228,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	function external_image_sideload( $file , $post_id , $desc = '' ) {
 	
 		if ( ! empty($file) && is_external_file( $file ) ) {
-			// Download file to temp location
-			$tmp = download_url( $file );
-	
+
 			// Set variables for storage
 			// fix file filename for query strings
-			preg_match('/[^\?]+\.(jpg|JPG|jpe|JPE|jpeg|JPEG|gif|GIF|png|PNG|pdf|PDF)/', $file, $matches);
+			preg_match( '/[^\?]+\.(jpe?g|jpe|gif|png)\b/i', $file, $matches );
+			$file_array = array();
 			$file_array['name'] = basename($matches[0]);
-			$file_array['tmp_name'] = $tmp;
+			$file_array['tmp_name'] = download_url( $file );
 	
 			// If error storing temporarily, unlink
-			if ( is_wp_error( $tmp ) ) {
+			if ( is_wp_error( $file_array['tmp_name'] ) ) {
 				@unlink($file_array['tmp_name']);
 				$file_array['tmp_name'] = '';
 				return false;
@@ -321,7 +321,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 			}
 			
 			//only check FQDNs
-			if ( $uri != '' && preg_match( '/^http:\/\//' , $uri ) ) {
+			if ( $uri != '' && preg_match( '/^https?:\/\//' , $uri ) ) {
 				//make sure it's external
 				if ( $s != substr( $uri , 0 , strlen( $s ) ) && ( !isset( $mapped ) || $mapped != substr( $uri , 0 , strlen( $mapped ) ) ) ) {
 					$path_parts['extension'] = (isset($path_parts['extension'])) ? strtolower($path_parts['extension']) : false;
