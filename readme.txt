@@ -1,26 +1,33 @@
 === Import External Images VR51 ===
-Contributors: martythornley, VR51
-Donate link: http://martythornley.com
+
+Contributors: VR51, martythornley
 Donate Link: https://paypal.me/vr51
+Donate link: http://martythornley.com
 Plugin URL: https://github.com/VR51/import-external-images
 Tags: images, gallery, photobloggers, attachments, photo, links, external, photographers, Flickr, save, download, fetch, external, import
 Requires at least: 3.2
 Tested up to: 4.8
 Stable tag: trunk
 
+=== Import External Images VR51 ===
+
 Makes local copies of all externally linked images and (Optionally) PDFs in a post.
 
 == Description ==
 
-Imports images and (optionsally) PDFs from external sites where external images are referenced within a post.
+Imports externally hosted images and PDFs where they are referenced within a post.
 
 = Features =
 
+- Import externally hosted images
+- Import post-by-post during post editing
+- Import to multiple posts at a time by visiting Dashboard > Media > Import Images
+
 = Credits =
 
-This plugin is based on the work done in the "Add Linked Images to Gallery" plugin by http://www.bbqiguana.com/
+Version 1.5.x release by [VR51](https://github.com/VR51/import-external-images).
 
-Version 1.5 is a bugfix release by [VR51](https://github.com/VR51/import-external-images).
+This plugin is based Import External Images by Marty Thornley https://github.com/MartyThornley/import-external-images, which is based on "Add Linked Images to Gallery" plugin by http://www.bbqiguana.com/
 
 == Installation ==
 
@@ -51,6 +58,7 @@ You can make it ignore any domain you want on the settings page, in case you wor
 - Various code changes.
 
 = 1.5 =
+
 
 This is the first VR51 release of this plugin.
 
