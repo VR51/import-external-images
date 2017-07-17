@@ -4,15 +4,19 @@ Makes local copies of all externally linked images and (Optionally) PDFs in a po
 
 == Description ==
 
-Imports images and (optionsally) PDFs from external sites where external images are referenced within a post.
+Imports externally hosted images and PDFs where they are referenced within a post.
 
 = Features =
 
+- Import externally hosted images
+- Import post-by-post during post editing
+- Import to multiple posts at a time by visiting Dashboard > Media > Import Images
+
 = Credits =
 
-This plugin is based on the work done in the "Add Linked Images to Gallery" plugin by http://www.bbqiguana.com/
+Version 1.5.x release by [VR51](https://github.com/VR51/import-external-images).
 
-Version 1.5 is a bugfix release by [VR51](https://github.com/VR51/import-external-images).
+This plugin is based Import External Images by Marty Thornley https://github.com/MartyThornley/import-external-images, which is based on "Add Linked Images to Gallery" plugin by http://www.bbqiguana.com/
 
 == Installation ==
 
