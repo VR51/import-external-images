@@ -434,8 +434,8 @@ function external_image_options () {
 		#import_posts #processing { background: url( <?php echo EXTERNAL_IMAGES_URL; ?>/images/ajax-loader.gif ) top left transparent no-repeat; padding: 0 0 0 23px; }
 	</style>
 
-	<div class="wrap" style="overflow:hidden;">
-		<div class="icon32" id="icon-upload"><br></div>
+	<div class="wrap" style="overflow:hidden; display:inline-block; height:100%;height">
+		<div class="icon32" id="icon-generic"><br></div>
 		<h2>Import External Images</h2>
 
 		<?php 
@@ -456,44 +456,51 @@ function external_image_options () {
 		?>
 
 
-		<form name="external_image-options" method="post" action="" style="width:300px; padding: 20px; margin: 20px 20px 0 0 ; float: left; background: #f6f6f6; border: 1px solid #e5e5e5; ">
-		<h2>Options</h2>
+		<form name="external_image-options" method="post" action="" style="padding: 20px; margin: 20px 20px 0 0 ; float: left; display:block; background: #f6f6f6; border: 1px solid #e5e5e5; ">
 			<?php settings_fields('external_image'); ?>
-			<h3>How many images and posts to process</h3>
-			<p>The import process might stop if there are too many images and posts to process. Select lower values to process per run to improve the import process.</p>
-			<p><label for="external_image_images_count_custom">Images per Post</label>
-				<input type="number" name="external_image_images_count_custom" min="1" max="20" value="<?php echo (get_option('external_image_images_count_custom')); ?>">
-			</p>
-			<p class="howto">Default is 20. Maximum is 20.</p>
+			
+			<h2>Options</h2>
+			<div style="width: 50%;display:inline;float:left;">
+				<h3>How many images and posts to process</h3>
+				<p>The import process might stop if there are too many images and posts to process. Select lower values to process per run to improve the import process.</p>
+				<p><label for="external_image_images_count_custom">Images per Post</label><br>
+					<input type="number" name="external_image_images_count_custom" min="1" max="20" value="<?php echo (get_option('external_image_images_count_custom')); ?>">
+				</p>
+				<p class="howto">Default is 20. Maximum is 20.</p>
 
-			<p><label for="external_image_posts_count_custom">Posts per Run</label>
-				<input type="number" name="external_image_posts_count_custom" min="1" max="50" value="<?php echo (get_option('external_image_posts_count_custom')); ?>">
-			</p>
-			<p class="howto">Default is 50. Maximum is 50.</p>
+				<p><label for="external_image_posts_count_custom">Posts per Run</label><br>
+					<input type="number" name="external_image_posts_count_custom" min="1" max="50" value="<?php echo (get_option('external_image_posts_count_custom')); ?>">
+				</p>
+				<p class="howto">Default is 50. Maximum is 50.</p>
+			</div>
 
-			<h3>Which external IMG links to process</h3>
-			<p>By default, all images hosted on any external site are processed. Use these options to ignore images from certain domains.</p>
-			<p>
-			<label for="myradio1">
-				<input id="myradio1" type="radio" name="external_image_whichimgs" value="all" <?php echo (get_option('external_image_whichimgs')!='exclude'?'checked="checked"':''); ?> /> All images
-			</label>
-			</p>
-			<p>
-			<label for="myradio2">
-				<input id="myradio2" type="radio" name="external_image_whichimgs" value="exclude" <?php echo (get_option('external_image_whichimgs')=='exclude'?'checked="checked"':''); ?> /> Exclude images by domain
-			</label>
-			</p>
-			<p><label for="myradio2">Domains to exclude (comma separated):</label></p>
-			<p class="howto">Example: smugmug.com, flickr.com, picassa.com, photobucket.com, facebook.com</p>
-			<p><textarea style="height:90px; width: 294px;"id="external_image_excludes" name="external_image_excludes"><?php echo ( get_option('external_image_excludes') != '' ? get_option('external_image_excludes') : '' ); ?></textarea></p>
+			<div style="width: 50%;display:inline;float:left;">
+				<h3>Which external IMG links to process</h3>
+				<p>By default, all images hosted on any external site are processed. Use these options to ignore images from certain domains.</p>
+				<p>
+				<label for="myradio1">
+					<input id="myradio1" type="radio" name="external_image_whichimgs" value="all" <?php echo (get_option('external_image_whichimgs')!='exclude'?'checked="checked"':''); ?> /> All images
+				</label>
+				</p>
+				
+				<p>
+				<label for="myradio2">
+					<input id="myradio2" type="radio" name="external_image_whichimgs" value="exclude" <?php echo (get_option('external_image_whichimgs')=='exclude'?'checked="checked"':''); ?> /> Exclude images by domain
+				</label>
+				</p>
+				
+				<p><label for="myradio2">Domains to exclude (comma separated):</label></p>
+				<p class="howto">Example: smugmug.com, flickr.com, picassa.com, photobucket.com, facebook.com</p>
+				<p><textarea style="height:90px; width: 90%;" id="external_image_excludes" name="external_image_excludes"><?php echo ( get_option('external_image_excludes') != '' ? get_option('external_image_excludes') : '' ); ?></textarea></p>
 
-			<div class="submit">
-				<input type="hidden" name="external_image_update" value="action" />
-				<input type="submit" name="submit" class="button-primary" value="Save Changes" />
+				<div class="submit">
+					<input type="hidden" name="external_image_update" value="action" />
+					<input type="submit" name="submit" class="button-primary" value="Save Changes" />
+				</div>
 			</div>
 		</form>
 
-		<div id="import_all_images" style="float:left; margin:0px; padding:20px; display:inline;">
+		<div id="import_all_images" style="float:left; margin:0px; padding:20px; display:block;">
 
 		<h2 style="margin-top: 0px;">Process all posts</h2>
 
@@ -545,6 +552,7 @@ function external_image_options () {
 								<th class="manage-column column-images" scope="col">Ext. Images</th>
 								<th class="manage-column column-edit" scope="col">Edit</th>
 							</thead>';
+						$html .= '<tbody>';
 						foreach( $posts_to_fix as $post_to_fix ) {
 							$html .= '<tr>
 									<td class="manage-column column-date-created date" scope="col">' . $post_to_fix['post_type'] . '</td>
@@ -555,6 +563,7 @@ function external_image_options () {
 									<td class="manage-column column-edit" scope="col"><a href="' . admin_url('post.php?post='.$post_to_fix['id'].'&action=edit') . '" class="button-link" target="_blank">Edit Post</a>.</td>
 								</tr>';
 						}
+						$html .= '</tbody>';
 						$html .= '</table>';
 						$html .= '</div>';
 					}
@@ -568,7 +577,6 @@ function external_image_options () {
 
 			?>
 
-		</div>
 	</div>
 <?php
 }
