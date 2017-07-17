@@ -358,8 +358,9 @@ function external_image_get_img_tags ( $post_id ) {
 	return $result;
 }
 
-function external_image_backcatalog () {
+function external_image_backcatalog() {
 
+	// $posts_count_custom = get_option('external_image_posts_count_custom');
 	$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 	echo '<h4>Processing Posts...</h4>';
 
@@ -386,7 +387,7 @@ function external_image_backcatalog () {
 
 			}
 		} catch (Exception $e) {
-			echo '<em>an error occurred</em>.</p>';
+			echo '<em>An error occurred</em>.</p>';
 		}
 	}
 
@@ -400,8 +401,9 @@ function external_image_backcatalog () {
 	}
 }
 
-function external_image_get_backcatalog () {
+function external_image_get_backcatalog() {
 
+	// $numberposts = get_option('external_image_posts_count_custom');
 	$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 
 	$count_posts = 0;
@@ -418,7 +420,7 @@ function external_image_get_backcatalog () {
 				$count_posts ++;
 			}
 		} catch (Exception $e) {
-			echo '<em>an error occurred</em>.</p>';
+			echo '<em>An error occurred</em>.</p>';
 		}
 	}
 
