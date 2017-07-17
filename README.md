@@ -37,6 +37,11 @@ You can make it ignore any domain you want on the settings page, in case you wor
 
 == Changelog ==
 
+= 1.5.1 =
+
+- Improved posts layout table.
+- Various code changes.
+
 = 1.5 =
 
 
