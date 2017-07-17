@@ -41,22 +41,14 @@ define( 'EXTERNAL_IMAGES_ALLOW_BULK_MESSAGE' , false );
 
 $external_image_count = 0;
 
-$images_count_custom = get_option('external_image_images_count_custom');
-if ( empty($images_count_custom) ) {
+$images_count_custom = get_option('external_image_images_count_custom', '20');
+if ( $images_count_custom <= 0 || $images_count_custom >= 21 ) {
 	$images_count_custom = 20;
-} else {
-	if ( $images_count_custom <= 0 || $images_count_custom >= 21 ) {
-		$images_count_custom = 20;
-	}	
 }
 
-$posts_count_custom = get_option('external_image_posts_count_custom');
-if ( empty($posts_count_custom) ) {
-	$posts_count_custom = 20;
-} else {
-	if ( $posts_count_custom <= 0 || $posts_count_custom >= 21 ) {
-		$posts_count_custom = 20;
-	}	
+$posts_count_custom = get_option('external_image_posts_count_custom', '50');
+if ( $posts_count_custom <= 0 || $posts_count_custom >= 51 ) {
+	$posts_count_custom = 50;
 }
 
 require_once( ABSPATH . 'wp-admin/includes/file.php' );
@@ -135,7 +127,7 @@ function external_image_menu() {
 function import_external_images_per_post() {
 
 	$external_images = external_image_get_img_tags( $_GET['post'] );
-	$images_count_custom = get_option('external_image_images_count_custom');
+	$images_count_custom = get_option('external_image_images_count_custom', '20');
 
 	$html = '';
 	$pdfs = '';
@@ -360,7 +352,7 @@ function external_image_get_img_tags ( $post_id ) {
 
 function external_image_backcatalog() {
 
-	// $posts_count_custom = get_option('external_image_posts_count_custom');
+	// $numberposts = get_option('external_image_posts_count_custom', '50');
 	$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 	echo '<h4>Processing Posts...</h4>';
 
@@ -403,7 +395,7 @@ function external_image_backcatalog() {
 
 function external_image_get_backcatalog() {
 
-	// $numberposts = get_option('external_image_posts_count_custom');
+	// $numberposts = get_option('external_image_posts_count_custom', '50');
 	$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 
 	$count_posts = 0;
