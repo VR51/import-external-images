@@ -5,8 +5,8 @@
 */
 	
 	// ajax actions
-	add_action( 'wp_ajax_external_image_get_backcatalog_ajax', 	'external_image_get_backcatalog_ajax' );
-	add_action( 'wp_ajax_external_image_import_all_ajax', 		'external_image_import_all_ajax' );
+	add_action( 'wp_ajax_external_image_get_backcatalog_ajax', 'external_image_get_backcatalog_ajax' );
+	add_action( 'wp_ajax_external_image_import_all_ajax', 'external_image_import_all_ajax' );
 			
 	/**
 	 * Output the javascript needed for making ajax calls into the header
@@ -30,7 +30,8 @@
 	/**
 	 *
 	 */	
-	function external_image_get_backcatalog_ajax( $numberposts = -1 ) {
+	function external_image_get_backcatalog_ajax() {
+		$numberposts = get_option('external_image_posts_count_custom');
 		$posts_to_import = external_image_get_backcatalog($numberposts);	
 		
 		if(!empty($posts_to_import)) {
