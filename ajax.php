@@ -30,8 +30,8 @@
 	/**
 	 *
 	 */	
-	function external_image_get_backcatalog_ajax() {
-		$numberposts = get_option('external_image_posts_count_custom');
+	function external_image_get_backcatalog_ajax( $numberposts = -1 ) {
+		// $numberposts = get_option('external_image_posts_count_custom', '50');
 		$posts_to_import = external_image_get_backcatalog($numberposts);	
 		
 		if(!empty($posts_to_import)) {
@@ -60,8 +60,8 @@
 		
 		if (!$post_id) {
 			$results = array(
-				'success'	=> false,
-				'message' 	=> 'Missing ID Parameter'
+				'success' => false,
+				'message' => 'Missing ID Parameter'
 			);
 			
 			echo json_encode($results);
