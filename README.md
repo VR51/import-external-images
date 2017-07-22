@@ -6,6 +6,8 @@ Makes local copies of all externally linked images and (Optionally) PDFs in a po
 
 Imports externally hosted images and PDFs where they are referenced within a post.
 
+Be aware that the plugin shows a number next to the title of posts that contain external images. This number includes the count of links to external images that can be updated. Consider this number to be a count of total changes to be made rather than the number of images to be imported.
+
 = Features =
 
 - Import externally hosted images
@@ -17,6 +19,10 @@ Imports externally hosted images and PDFs where they are referenced within a pos
 Version 1.5.x release by [VR51](https://github.com/VR51/import-external-images).
 
 This plugin is based Import External Images by Marty Thornley https://github.com/MartyThornley/import-external-images, which is based on "Add Linked Images to Gallery" plugin by http://www.bbqiguana.com/
+
+= Donate =
+
+Donate Link: https://paypal.me/vr51
 
 == Installation ==
 
@@ -40,6 +46,15 @@ Yes!
 You can make it ignore any domain you want on the settings page, in case you work with a CDN or photo hosting site and want to keep those images where they are.
 
 == Changelog ==
+
+= 1.5.2 =
+
+- Merged ajax.php into main file import-external-images.php. This done to make functional the 'posts to process count' feature.
+- Fixed counting bug that prevented limits being set for the number of posts to process.
+- Fixed counting bug that prevented limits being set for the number of images to process per post.
+- Removed superfluous function 'external_images_verify_permission()'. Was disabled prior to code edits. No longer needed now that ajax.php is merged with import-external-images.php.
+- Corrected comments in import-external-images.js file. Comments suggested we were resizing images when we were only importing images.
+- Adjusted plugin text to better match the text meaning to the actual functions of the plugin.
 
 = 1.5.1 =
 

@@ -34,6 +34,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+/* Used for debugging. */
+/*
+function phpAlert($msg) {
+    echo '<script type="text/javascript">alert("' . $msg . '")</script>';
+}
+*/
+
 define( 'EXTERNAL_IMAGES_DIR' , plugin_dir_path( __FILE__ ) );
 define( 'EXTERNAL_IMAGES_URL' , plugins_url( basename( dirname( __FILE__ ) ) ) );
 
@@ -54,14 +61,15 @@ if ( $posts_count_custom <= 0 || $posts_count_custom >= 51 ) {
 require_once( ABSPATH . 'wp-admin/includes/file.php' );
 require_once( ABSPATH . 'wp-admin/includes/media.php' );
 
-include_once( plugin_dir_path( __FILE__ ) . 'ajax.php');
-
-//register_activation_hook( __FILE__ , 'external_image_install' );
-
 add_action( 'admin_menu', 'external_image_menu' );
 add_action( 'admin_init', 'external_image_admin_init' );
 add_action( 'admin_head' , 'external_images_bulk_resize_admin_javascript' );
 add_action( 'admin_notices', 'external_images_bulk_resize_message' , 90 );
+
+// ajax actions
+add_action( 'wp_ajax_external_image_get_backcatalog_ajax', 'external_image_get_backcatalog_ajax' );
+add_action( 'wp_ajax_external_image_import_all_ajax', 'external_image_import_all_ajax' );
+
 
 function external_image_admin_init () {		
 	global $pagenow;
@@ -92,6 +100,77 @@ function external_images_bulk_resize_message(){
 		}
 	}
 }
+
+/**
+*
+*  AJAX FUNCTIONS
+*
+**/
+
+/**
+* Output the javascript needed for making ajax calls into the header
+**/
+function external_images_bulk_resize_admin_javascript() {
+	echo "<script type=\"text/javascript\" src=\"".EXTERNAL_IMAGES_URL."/import-external-images.js\" ></script>\n";
+}
+	
+
+/**
+*
+**/
+function external_image_get_backcatalog_ajax() {
+	$posts_to_import = external_image_get_backcatalog();	
+	
+	if(!empty($posts_to_import)) {
+		$response['success'] = true;
+		$response['posts'] = $posts_to_import;
+	} else {
+		$response['success'] = false;
+		$response['posts'] = array();
+	}
+
+	echo json_encode( $response );
+	die();
+}
+
+/**
+*
+*/
+function external_image_import_all_ajax() {
+			
+	global $wpdb;
+	
+	$post_id = intval( $_POST['import_images_post'] );
+	$response = array();
+	
+	if (!$post_id) {
+		$results = array(
+			'success' => false,
+			'message' => 'Missing ID Parameter'
+		);
+		
+		echo json_encode($results);
+		die();
+	}
+	
+	$post = get_post($post_id);
+	
+	// do what we need with image...
+	$response = external_image_import_images( $post_id , true );
+
+	$results = ( $response ? '<strong>' . $post->post_title . '</strong> had ('. $response .') images successfully imported and image link changes made.<br />' : '<strong>' . $post->post_title . ': </strong> No images imported - you might want to check whether they still exist!' );
+
+	echo json_encode( $results  );
+	die(); // required by wordpress
+}
+
+
+/**
+*
+*	Process Images
+*
+**/
+
 
 function force_attachment_links_to_link_to_image( $link , $id ) {
 
@@ -130,26 +209,29 @@ function import_external_images_per_post() {
 	$images_count_custom = get_option('external_image_images_count_custom', '20');
 
 	$html = '';
+	$images = '';
 	$pdfs = '';
 
 	if ( is_array( $external_images ) && count( $external_images ) > 0 ) {
 
-	$html = '<div class="misc-pub-section " id="external-images" style="background-color: #FFFFE0; border-color: #E6DB55;">';
-	$html .= '<h4>You have ('.count( $external_images ).')  files that can be imported!</h4>';
+		$html = '<div class="misc-pub-section " id="external-images" style="background-color: #FFFFE0; border-color: #E6DB55;">';
+		$html .= '<h4>You have ('.count( $external_images ).') files that can be imported and link updates that can be made.</h4>';
+		
+		foreach ( $external_images as $external_image ) {
 
-	foreach ( $external_images as $external_image ) {
+			if( strtolower(pathinfo($external_image, PATHINFO_EXTENSION)) == 'pdf') {
+				$cutlen = strlen( $external_image ) < 40  ? strlen( $external_image ) : -40;
 
-		if( strtolower(pathinfo($external_image, PATHINFO_EXTENSION)) == 'pdf') {
-			$cutlen = strlen( $external_image ) < 40  ? strlen( $external_image ) : -40;
-
-			$pdfs .= '<li><small>...' . substr( $external_image, $cutlen) . '</small></li>';
-		}
-		else {
-			$html .= '<img style="margin: 3px; max-width:50px;" src="'.$external_image.'" />';	
-		}
+				$pdfs .= '<li><small>...' . substr( $external_image, $cutlen) . '</small></li>';
+			}
+			else {
+				$images .= '<li><img style="margin: 3px; max-width:50px;" src="'.$external_image.'" /></li>';	
+			}
 
 	}
 
+	$html .= "<style>.image-list li {display: inline;}</style><ul class='image-list'>$images</ul>";
+	
 	if( strlen( $pdfs ) ) {
 		$html .= '<strong>PDFs to Import:</strong>';
 		$html .= '<ul class="pdf-list">' . $pdfs . '</ul>';
@@ -157,7 +239,7 @@ function import_external_images_per_post() {
 
 	$html .= 	'<input type="hidden" name="import_external_images_nonce" id="import_external_images_nonce" value="'.wp_create_nonce( 'import_external_images_nonce' ).'" />';
 	$html .= 	'<p><input type="checkbox" name="import_external_images" id="import_external_images" value="import-'.$_GET['post'].'" /> Import External Media?</p>';	
-	$html .= 	'<p class="howto">Only ' . $images_count_custom . ' images will be imported at a time to keep things from taking too long.</p>';
+	$html .= 	'<p class="howto">Only ' . $images_count_custom . ' image and link changes will be made at a time to keep things from taking too long.</p>';
 
 	$html .= 	'</div>';
 	}
@@ -167,11 +249,14 @@ function import_external_images_per_post() {
 
 function is_external_file( $file ) {
 
-	$allowed = array( '.jpg' , '.png', '.bmp' , '.gif',  '.pdf' );
-
+	$allowed = array( '.jpg' , '.jpe', '.png', '.bmp' , '.gif',  '.pdf' );
 	$ext = substr( $file , -4 );
-
 	if ( in_array( strtolower($ext) , $allowed ) )
+		return true;
+		
+	$allowedAlso = array( '.jpeg' );
+	$extAlso = substr( $file , -5 );
+	if ( in_array( strtolower($extAlso) , $allowedAlso ) )
 		return true;
 
 	return false; 
@@ -205,20 +290,25 @@ function external_image_import_images( $post_id , $force = false ) {
 	$post = get_post($post_id);
 	$replaced = false;
 	$content = $post->post_content;
-	$imgs = external_image_get_img_tags($post_id);
+	$imgs = external_image_get_img_tags($post_id); // Array of external image URLs
 	$images_count_custom = get_option('external_image_images_count_custom');
 	
+	$debugNew = array();
+	
 	$count = 0;
-	for ( $i=0; $i<$images_count_custom; $i++ ) {
-		if (isset($imgs[$i]) && is_external_file($imgs[$i]) ) {
-			$new_img = external_image_sideload( $imgs[$i] , $post_id );	
+	
+	for ( $i=0; $i<count($imgs); $i++ ) {
+		if ( isset($imgs[$i]) && is_external_file($imgs[$i]) && $count < $images_count_custom ) {
+			$new_img = external_image_sideload( $imgs[$i] , $post_id ); // $new_img = Localhost URI of the downloaded image
 			if ($new_img && is_external_file($new_img) ) {
-				$content = str_replace( $imgs[$i] , $new_img , $content);
+					$content = str_replace( $imgs[$i], $new_img, $content );
 				$replaced = true;
 				$count++;
+				// $debugNew[] .= $imgs[$i];
 			}
 		}
 	}
+	
 	if ( $replaced ) {
 		set_transient( 'saving_imported_images_'.$post_id , 'true' , 20 );
 		$update_post = array();
@@ -230,7 +320,13 @@ function external_image_import_images( $post_id , $force = false ) {
 	} else {
 		$response = false;
 	}
+	
 	return $response;
+	
+	// $debugNew = implode( " : ", $debugNew);
+	
+	// return $debugNew;
+	
 }
 
 /*
@@ -291,6 +387,9 @@ function external_image_getext( $file ) {
 			case 'image/gif':
 				return '.gif';
 				break;
+			case 'image/bmp':
+				return '.bmp';
+				break;
 			case 'image/png':
 				return '.png';
 				break;
@@ -306,7 +405,7 @@ function external_image_getext( $file ) {
 	}
 }
 
-function external_image_get_img_tags ( $post_id ) {
+function external_image_get_img_tags( $post_id ) {
 	$post = get_post( $post_id );
 	$w = get_option( 'external_image_whichimgs' );
 	$s = get_option( 'siteurl' );
@@ -340,7 +439,7 @@ function external_image_get_img_tags ( $post_id ) {
 			//make sure it's external
 			if ( $s != substr( $uri , 0 , strlen( $s ) ) && ( !isset( $mapped ) || $mapped != substr( $uri , 0 , strlen( $mapped ) ) ) ) {
 				$path_parts['extension'] = (isset($path_parts['extension'])) ? strtolower($path_parts['extension']) : false;
-				if ( $path_parts['extension'] == 'gif' || $path_parts['extension'] == 'jpg' || $path_parts['extension'] == 'png' || $path_parts['extension'] == 'pdf')
+				if ( $path_parts['extension'] == 'gif' || $path_parts['extension'] == 'jpg' || $path_parts['extension'] == 'bmp' || $path_parts['extension'] == 'png' || $path_parts['extension'] == 'pdf')
 					$result[] = $uri;
 			}
 		}
@@ -352,11 +451,9 @@ function external_image_get_img_tags ( $post_id ) {
 
 function external_image_backcatalog() {
 
-	// $numberposts = get_option('external_image_posts_count_custom', '50');
-	$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
+	$numberposts = get_option('external_image_posts_count_custom', '50');
+	$posts = get_posts( array( 'numberposts' => $numberposts, 'post_type' => 'any', 'post_status' => 'any' ) );
 	echo '<h4>Processing Posts...</h4>';
-
-	set_time_limit(300);
 
 	$count = 0;
 
@@ -395,9 +492,15 @@ function external_image_backcatalog() {
 
 function external_image_get_backcatalog() {
 
-	// $numberposts = get_option('external_image_posts_count_custom', '50');
-	$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
+	/**
+	*	Get list of all posts.
+	*	Test posts for externally hosted images.
+	*	Add posts with external images into $posts_to_import array.
+	*	Return array to wherever called.
+	**/
 
+	$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
+	$numberposts = get_option('external_image_posts_count_custom', '50');
 	$count_posts = 0;
 	$posts_to_import = array();
 	foreach( $posts as $post ) {
@@ -408,7 +511,10 @@ function external_image_get_backcatalog() {
 
 			if ( is_array( $imgs ) && count( $imgs ) > 0 ) {
 				$count_images += count( $imgs );
-				$posts_to_import[] = $post->ID;
+				if ($numberposts >= 1) {
+					$numberposts --;
+					$posts_to_import[] = $post->ID;
+				}
 				$count_posts ++;
 			}
 		} catch (Exception $e) {
@@ -419,7 +525,13 @@ function external_image_get_backcatalog() {
 	return $posts_to_import;
 }
 
-function external_image_options () {
+/**
+*
+*	Admin Page Display
+*
+**/
+
+function external_image_options() {
 	$_cats  = '';
 	$_auths = '';
 	?>
@@ -435,7 +547,7 @@ function external_image_options () {
 		<?php 
 			if ( isset( $_POST['action'] ) && $_POST['action'] == 'backcatalog' ) {
 
-				echo '<div id="message" class="updated fade" style="background-color:rgb(255,251,204); overflow: hidden; margin: 0 0 10px 0">';
+				echo '<div id="message" class="updated fade to-remove" style="background-color:rgb(255,251,204); overflow: hidden; margin: 0 0 10px 0">';
 				external_image_backcatalog();
 				echo '</div>';
 
@@ -455,6 +567,7 @@ function external_image_options () {
 			
 			<h2>Options</h2>
 			<div style="width: 50%;display:inline;float:left;">
+				<p class="howto">We will download externally hosted images found within this site's posts so that those images are hosted locally on this site's web server. Links to externally hosted images will be updated by this process too.</p>
 				<h3>How many images and posts to process</h3>
 				<p>The import process might stop if there are too many images and posts to process. Select lower values to process per run to improve the import process.</p>
 				<p><label for="external_image_images_count_custom">Images per Post</label><br>
@@ -503,7 +616,7 @@ function external_image_options () {
 				$posts = get_posts( array( 'numberposts' => -1, 'post_type' => 'any', 'post_status' => 'any' ) );
 				$count = 0;
 				foreach( $posts as $this_post ) {
-					$images = external_image_get_img_tags ($this_post->ID);
+					$images = external_image_get_img_tags($this_post->ID);
 					if( !empty( $images ) ) {
 						$posts_to_fix[$count]['title'] = $this_post->post_title;
 						$posts_to_fix[$count]['images'] = $images;
@@ -539,6 +652,7 @@ function external_image_options () {
 
 						$html .= '<table class="widefat">';
 						$html .= '<thead>
+								<th class="manage-column column-post-count" scope="num"></th>
 								<th class="manage-column column-post-type" scope="col">Type</th>
 								<th class="manage-column column-date-created date" scope="col">Created</th>
 								<th class="manage-column column-date-modified date" scope="col">Modified</th>
@@ -547,8 +661,10 @@ function external_image_options () {
 								<th class="manage-column column-edit" scope="col">Edit</th>
 							</thead>';
 						$html .= '<tbody>';
+						$num = 1;
 						foreach( $posts_to_fix as $post_to_fix ) {
 							$html .= '<tr>
+									<td class="manage-column column-post-count date" scope="num">' . $num . '</td>
 									<td class="manage-column column-date-created date" scope="col">' . $post_to_fix['post_type'] . '</td>
 									<td class="manage-column column-date-created date" scope="col">' . $post_to_fix['post_date'] . '</td>
 									<td class="manage-column column-date-modified date" scope="col">' . $post_to_fix['post_modified'] . '</td>
@@ -556,13 +672,14 @@ function external_image_options () {
 									<td class="manage-column column-images" scope="col">' . count($post_to_fix['images']) . ' images.</td>
 									<td class="manage-column column-edit" scope="col"><a href="' . admin_url('post.php?post='.$post_to_fix['id'].'&action=edit') . '" class="button-link" target="_blank">Edit Post</a>.</td>
 								</tr>';
+							$num++;
 						}
 						$html .= '</tbody>';
 						$html .= '</table>';
 						$html .= '</div>';
 					}
 				} else {
-					$html .= "<p>We didn't find any external images to import. You're all set!</p>";
+					$html .= "<p>We didn't find any external images to import or external image links change. You're all set!</p>";
 
 				}
 				$html .= '</div>';

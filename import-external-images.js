@@ -4,7 +4,7 @@
  */
 	
 	/**
-	 * Begin the process of re-sizing all of the checked images
+	 * Begin the process of fetching images
 	 */
 	function external_images_import_images() {
 		
@@ -19,14 +19,13 @@
 		
 		target.html('');
 		target.show();
-		//jQuery(document).scrollTop(target.offset().top);
 	
 		var data = {
 			action: 'external_image_get_backcatalog_ajax',
 		};
 		
 		jQuery.post( ajaxurl, data , function(response) {
-			//alert('Got this from the server: ' + response);
+			// alert('Got this from the server: ' + response);
 
 			var results = JSON.parse(response);
 			var posts_to_process = results['posts'];
@@ -41,7 +40,7 @@
 	}
 	
 	/** 
-	 * recursive function for resizing images
+	 * Messages
 	 */
 	function external_images_import_all(posts,next_post) {
 		
@@ -99,7 +98,7 @@
 	}
 	
 	/**
-	 * fired when all images have been resized
+	 * fired when all images have been fetched
 	 */
 	function external_images_import_complete() {
 		var target = jQuery('#import_process'); 
