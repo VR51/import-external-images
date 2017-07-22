@@ -2,7 +2,7 @@
 /*
 Plugin Name: Import External Images VR51
 Plugin URI:  https://github.com/VR51/import-external-images
-Version: 1.5.1
+Version: 1.5.2
 Description: Examines the text of a post and makes local copies of all the images linked though IMG tags, adding them as gallery attachments on the post itself.
 Author: VR51, Marty Thornley
 Author URI: https://github.com/VR51/import-external-images
@@ -425,7 +425,7 @@ function external_image_options () {
 	?>
 
 	<style type="text/css">
-		#import_posts #processing { background: url( <?php echo EXTERNAL_IMAGES_URL; ?>/images/ajax-loader.gif ) top left transparent no-repeat; padding: 0 0 0 23px; }
+		#import_posts #processing { background: url(/wp-admin/images/spinner.gif) top left transparent no-repeat; padding: 0 0 0 23px; }
 	</style>
 
 	<div class="wrap" style="overflow:hidden; display:inline-block; height:100%;height">
