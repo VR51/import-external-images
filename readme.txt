@@ -2,11 +2,15 @@
 
 Contributors: VR51, martythornley
 Donate Link: https://paypal.me/vr51
-Plugin URL: https://github.com/VR51/import-external-images
+Plugin URL: See version 2 at https://github.com/VR51/Import-External-Images-2
 Tags: images, gallery, photobloggers, attachments, photo, links, external, photographers, Flickr, save, download, fetch, external, import
 Requires at least: 3.2
 Tested up to: 4.8
 Stable tag: trunk
+
+== Important ==
+
+See version 2 at https://github.com/VR51/Import-External-Images-2
 
 === Import External Images VR51 ===
 
@@ -52,6 +56,10 @@ Yes!
 You can make it ignore any domain you want on the settings page, in case you work with a CDN or photo hosting site and want to keep those images where they are.
 
 == Changelog ==
+
+= 2.0.0 =
+
+Plugin repository moved to https://github.com/VR51/Import-External-Images-2
 
 = 1.5.2 =
 
